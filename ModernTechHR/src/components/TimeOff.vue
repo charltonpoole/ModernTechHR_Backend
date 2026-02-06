@@ -8,7 +8,7 @@
           <div class="col">
             <label class="form-label">Employee</label>
             <select v-model="newReq.employeeId" class="form-select">
-              <option v-for="e in employees" :value="e.id" :key="e.id">{{ e.name }}</option>
+              <option v-for="e in employeesList" :value="e.id" :key="e.id">{{ e.name }}</option>
             </select>
           </div>
           <div class="col">
@@ -37,39 +37,66 @@
     </div>
     <div v-if="loading" class="muted mt-3">Loading requests...</div>
     <div v-else-if="error" class="text-danger mt-3">{{ error }}</div>
-    <table v-else class="table table-light table-striped mt-3">
-      <thead>
-        <tr><th>Employee</th><th>From</th><th>To</th><th>Type</th><th>Status</th><th>Action</th></tr>
-      </thead>
-      <tbody>
-        <tr v-for="r in requests" :key="r.id">
-          <td>{{ employeeName(r.employeeId) }}</td>
-          <td>{{ r.from }}</td>
-          <td>{{ r.to }}</td>
-          <td>{{ r.type }}</td>
-          <td>{{ r.status }}</td>
-          <td>
-            <button class="btn btn-sm btn-success me-1" @click="update(r, 'Approved')">Approve</button>
-            <button class="btn btn-sm btn-danger" @click="update(r, 'Denied')">Deny</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else>
+      <table v-if="pendingRequests.length" class="table table-light table-striped mt-3">
+        <thead>
+          <tr><th>Employee</th><th>From</th><th>To</th><th>Type</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="r in pendingRequests" :key="r.id">
+            <td>{{ employeeName(r.employeeId) }}</td>
+            <td>{{ formatDate(r.from) }}</td>
+            <td>{{ formatDate(r.to) }}</td>
+            <td>{{ r.type }}</td>
+            <td>{{ r.status }}</td>
+            <td>
+              <button class="btn btn-sm btn-success me-1" @click="update(r, 'Approved')">Approve</button>
+              <button class="btn btn-sm btn-danger" @click="update(r, 'Denied')">Deny</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-else class="muted mt-3">No pending requests.</div>
+
+      <h6 class="brand mt-4">Reviewed Requests</h6>
+      <table v-if="reviewedRequests.length" class="table table-light table-striped mt-2">
+        <thead>
+          <tr><th>Employee</th><th>From</th><th>To</th><th>Type</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="r in reviewedRequests" :key="r.id">
+            <td>{{ employeeName(r.employeeId) }}</td>
+            <td>{{ formatDate(r.from) }}</td>
+            <td>{{ formatDate(r.to) }}</td>
+            <td>{{ r.type }}</td>
+            <td>{{ r.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-else class="muted mt-2">No reviewed requests yet.</div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { apiGet, apiSend } from '../api.js'
 
 const requests = ref([])
 const employeesList = ref([])
 const loading = ref(false)
 const error = ref('')
+const pendingRequests = computed(() => requests.value.filter(r => r.status === 'Pending'))
+const reviewedRequests = computed(() => requests.value.filter(r => r.status !== 'Pending'))
 
 function employeeName(id){
-  const e = employeesList.value.find(x => x.id === id)
+  const e = employeesList.value.find(x => Number(x.id) === Number(id))
   return e ? e.name : 'Unknown'
+}
+
+function formatDate(value) {
+  if (!value) return '--'
+  return String(value).slice(0, 10)
 }
 
 async function update(r, status){
@@ -78,7 +105,12 @@ async function update(r, status){
       method: 'PATCH',
       body: JSON.stringify({ status })
     })
-    r.status = updated.status
+    const idx = requests.value.findIndex(x => x.id === r.id)
+    if (idx !== -1) {
+      const next = { ...requests.value[idx], status: updated.status }
+      requests.value.splice(idx, 1)
+      requests.value.push(next)
+    }
   } catch (err) {
     error.value = 'Failed to update leave request.'
   }
@@ -103,7 +135,7 @@ async function submitRequest() {
         type: newReq.value.type
       })
     })
-    requests.value.push(created)
+    requests.value.unshift(created)
     newReq.value = { employeeId: employeesList.value[0]?.id || 1, from: '', to: '', type: 'Vacation' }
   } catch (err) {
     formError.value = 'Failed to submit request.'

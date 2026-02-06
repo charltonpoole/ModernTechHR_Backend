@@ -7,18 +7,19 @@ Express API for the ModernTechHR frontend. Uses MySQL for data.
 1. Create the database and seed data:
 
 Run the SQL script in `back/MySQL.sql`.
+If you prefer the raw dump, create/select the `moderntech_hr` database and run `back/Dump20260205.sql` instead.
 
 2. Configure environment:
 
 Create `back/.env`:
 
 ```
-PORT=4000
+PORT=4001
 CORS_ORIGIN=http://localhost:5173
-DB_HOST=localhost
+DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=
+DB_PASSWORD="your_password"
 DB_NAME=moderntech_hr
 DB_SSL=false
 ```
@@ -36,7 +37,7 @@ npm install
 npm run dev
 ```
 
-API runs at `http://localhost:4000` by default.
+API runs at `http://localhost:4001` by default.
 
 ## Endpoints
 

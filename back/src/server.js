@@ -9,9 +9,20 @@ dotenv.config();
 
 const app = express();
 const port = Number(process.env.PORT || 4001);
-const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+const corsOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map(origin => origin.trim())
+  .filter(Boolean);
 
-app.use(cors({ origin: corsOrigin }));
+app.use(
+  cors({
+    origin(origin, cb) {
+      if (!origin) return cb(null, true);
+      if (corsOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error(`CORS blocked for origin: ${origin}`));
+    }
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
@@ -20,6 +31,7 @@ app.get("/api/health", async (req, res) => {
     await pingDb();
     res.json({ ok: true, message: "ModernTechHR API is running" });
   } catch (err) {
+    console.error("[api] Database connection failed", err);
     res.status(500).json({ ok: false, error: "Database connection failed" });
   }
 });

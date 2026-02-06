@@ -1,7 +1,4 @@
-﻿-- Convenience wrapper for local setup
-CREATE DATABASE IF NOT EXISTS moderntech_hr;
-USE moderntech_hr;
--- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
+ -- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
 --
 -- Host: localhost    Database: moderntech_hr
 -- ------------------------------------------------------

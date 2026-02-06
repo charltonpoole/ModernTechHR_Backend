@@ -24,7 +24,7 @@
   --accent: #00aeff7a;
   --border: rgba(255, 255, 255, 0.12);
   --text: #ffffff;
-  --bg-image: url('C:/Users/YC Student/moderntechhr/public/abstract-networking-concept-still-life-assortment.jpg');
+  --bg-image: url('/abstract-networking-concept-still-life-assortment.jpg');
 }
 
 html, body, #app {
@@ -119,6 +119,14 @@ input, select, textarea {
   padding: 0.5rem;
   width: 100%;
   box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #111;
+}
+input::placeholder, textarea::placeholder {
+  color: #6c757d;
+}
+select option {
+  color: #111;
 }
 input:focus, select:focus, textarea:focus {
   outline: none;

@@ -5,6 +5,7 @@
       <button class="btn btn-outline-light" @click="active='payroll'">Payroll</button>
       <button class="btn btn-outline-light" @click="active='timeoff'">Time Off</button>
       <button class="btn btn-outline-light" @click="active='reports'">Reports</button>
+      <button class="btn btn-outline-light" @click="active='review'">Review</button>
     </div>
 
     <div v-if="active==='employees'" class="card">
@@ -22,6 +23,10 @@
     <div v-if="active==='reports'" class="card">
       <Reports />
     </div>
+
+    <div v-if="active==='review'" class="card">
+      <ReviewRequests />
+    </div>
   </div>
 </template>
 
@@ -31,6 +36,7 @@ import EmployeeList from '../components/EmployeeList.vue'
 import Payroll from '../components/ThePayroll.vue'
 import TimeOff from '../components/TimeOff.vue'
 import Reports from '../components/TheReports.vue'
+import ReviewRequests from '../components/ReviewRequests.vue'
 
 const active = ref('employees')
 </script>

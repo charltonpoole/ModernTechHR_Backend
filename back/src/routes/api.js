@@ -3,6 +3,10 @@ import { pool } from "../db.js";
 
 const router = Router();
 
+function logError(context, err) {
+  console.error(`[api] ${context}`, err);
+}
+
 function mapEmployee(row) {
   return {
     id: row.employee_id,
@@ -22,6 +26,7 @@ router.get("/employees", async (req, res) => {
     );
     res.json(rows.map(mapEmployee));
   } catch (err) {
+    logError("employees", err);
     res.status(500).json({ error: "Failed to load employees" });
   }
 });
@@ -33,6 +38,7 @@ router.get("/attendance", async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
+    logError("attendance", err);
     res.status(500).json({ error: "Failed to load attendance" });
   }
 });
@@ -75,6 +81,7 @@ router.get("/attendance-and-leave", async (req, res) => {
 
     res.json(response);
   } catch (err) {
+    logError("attendance-and-leave", err);
     res.status(500).json({ error: "Failed to load attendance and leave" });
   }
 });
@@ -93,6 +100,7 @@ router.get("/leave-requests", async (req, res) => {
       status: r.status
     })));
   } catch (err) {
+    logError("leave-requests", err);
     res.status(500).json({ error: "Failed to load leave requests" });
   }
 });
@@ -118,6 +126,7 @@ router.post("/leave-requests", async (req, res) => {
       status: "Pending"
     });
   } catch (err) {
+    logError("leave-requests:create", err);
     res.status(500).json({ error: "Failed to create leave request" });
   }
 });
@@ -141,6 +150,7 @@ router.patch("/leave-requests/:id", async (req, res) => {
 
     res.json({ id, status });
   } catch (err) {
+    logError("leave-requests:update", err);
     res.status(500).json({ error: "Failed to update leave request" });
   }
 });
@@ -159,6 +169,7 @@ router.get("/payroll-history", async (req, res) => {
       net: Number(r.net)
     })));
   } catch (err) {
+    logError("payroll-history", err);
     res.status(500).json({ error: "Failed to load payroll history" });
   }
 });
@@ -175,6 +186,7 @@ router.get("/payroll-calculations", async (req, res) => {
       finalSalary: Number(r.final_salary)
     })));
   } catch (err) {
+    logError("payroll-calculations", err);
     res.status(500).json({ error: "Failed to load payroll calculations" });
   }
 });
@@ -193,6 +205,7 @@ router.get("/summary", async (req, res) => {
       payrollHistory: payrollHistory.count
     });
   } catch (err) {
+    logError("summary", err);
     res.status(500).json({ error: "Failed to build summary" });
   }
 });
