@@ -1,4 +1,4 @@
-# ModernTechHR (Full Stack)
+﻿# ModernTechHR (Full Stack)
 
 This repo contains:
 - `back/` — Express + MySQL API
@@ -68,3 +68,4 @@ http://localhost:5173
 
 ## Notes
 - If MySQL is stopped, the API will fail and the frontend won’t load data.
+
